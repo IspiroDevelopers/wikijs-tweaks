@@ -18,13 +18,29 @@ coverage/
 # Local-only publishing guard (see scripts/check-repo.sh); lists private strings
 .privacy-denylist
 
-# Test output, logs, OS and editor files
+# Test, coverage and tool output
 test-output/
+test-results/
+playwright-report/
+blob-report/
+.vitest/
+.cache/
+.nyc_output/
+.eslintcache
+*.tgz
+
+# Logs, scratch files, OS and editor files
 *.log
 npm-debug.log*
+*.tmp
+*.orig
+*.rej
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 *.swp
+*~
+
+# Local assistant and tool configuration
 .claude/
