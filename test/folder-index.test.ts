@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { run, type Controller } from '../src/core/run'
-import { folderIndex } from '../src/features/folder-index'
+import { brightness, colorsFrom, folderIndex } from '../src/features/folder-index'
 import { mountSidebar, NAMES, settle } from './helpers/sidebar'
 
 const win = window as unknown as Window & typeof globalThis & { WikiJsTweaks?: unknown }
@@ -144,6 +144,42 @@ describe('folder index', () => {
     await settle()
     expect(strip()?.getAttribute('aria-label')).toBe('Indice alfabetico delle cartelle')
     expect(buttons().find((b) => b.textContent === 'M')?.getAttribute('aria-label')).toBe('Vai alle cartelle con la lettera M')
+  })
+
+  it('takes its colours from the folder names, so a light name gives white letters', async () => {
+    mountSidebar(NAMES, undefined, 'rgb(255, 255, 255)')
+    start({ folderIndex: { enabled: true } })
+    await settle()
+    const drawer = document.querySelector<HTMLElement>('.v-navigation-drawer')!
+    expect(drawer.style.getPropertyValue('--wjs-fg')).toBe('rgb(255, 255, 255)')
+    expect(drawer.style.getPropertyValue('--wjs-band')).toBe('rgba(0,0,0,.28)')
+  })
+
+  it('uses dark letters on a light sidebar', async () => {
+    mountSidebar(NAMES, undefined, 'rgb(33, 33, 33)')
+    const c = start({ folderIndex: { enabled: true } })
+    await settle()
+    const drawer = document.querySelector<HTMLElement>('.v-navigation-drawer')!
+    expect(drawer.style.getPropertyValue('--wjs-fg')).toBe('rgb(33, 33, 33)')
+    expect(drawer.style.getPropertyValue('--wjs-hover')).toBe('rgba(0,0,0,.14)')
+    c.stop()
+    expect(drawer.style.getPropertyValue('--wjs-fg')).toBe('')
+  })
+
+  it('does not depend on the theme class of the page', async () => {
+    document.documentElement.classList.add('theme--light')
+    mountSidebar(NAMES, undefined, 'rgb(255, 255, 255)')
+    start({ folderIndex: { enabled: true } })
+    await settle()
+    expect(document.querySelector('style[data-wjs-tweaks]')?.textContent).not.toContain('theme--light')
+    document.documentElement.classList.remove('theme--light')
+  })
+
+  it('reads colours', () => {
+    expect(brightness('rgb(255, 255, 255)')).toBe(1)
+    expect(brightness('rgba(0, 0, 0, 0.5)')).toBe(0)
+    expect(brightness('not a colour')).toBeNull()
+    expect(colorsFrom('')['--wjs-fg']).toBe('#fff') // unknown colour: assume a dark sidebar
   })
 
   it('uses only text, never markup, for what it shows', async () => {

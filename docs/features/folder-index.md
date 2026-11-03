@@ -9,6 +9,7 @@ subfolder starting with it and highlights it for a moment.
 
 ![The strip at the edge of the sidebar](images/folder-index-1-start.png)
 ![After a click on M](images/folder-index-2-jump.png)
+![In Wiki.js's light theme the letters have the colour of the folder names](images/folder-index-3-light.png)
 
 *(Test wiki with invented names.)*
 
@@ -31,7 +32,7 @@ Options (`minFolders`, `side`) are in [configuration](../configuration.md).
 - Letters with no folder are dimmed and cannot be clicked.
 - Only **folders** are counted; pages of the current folder are not.
 - It works with the keyboard (Tab to a letter, Enter) and has a text label for screen readers, in English or Italian.
-- It follows the dark and the light theme.
+- It takes its colours from the folder names in your sidebar (white names give white letters, dark names dark letters), so it follows the dark and the light theme and custom sidebar colours.
 
 ## How it finds the folders
 

@@ -26,4 +26,4 @@ Checked: Chromium (Playwright). The script uses only long-standing features (`Mu
 
 ## Theme
 
-Checked with the default Wiki.js theme in dark mode. A light mode style is included but not part of the automated check. Custom themes that restructure the sidebar may not match.
+Checked with the default Wiki.js theme in dark **and** light mode (the letters must have the colour of the folder names). Custom themes that restructure the sidebar may not match.
