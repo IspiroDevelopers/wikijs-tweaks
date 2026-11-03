@@ -49,9 +49,9 @@ async function setUp() {
   return token
 }
 
-async function inject(token, config) {
+async function inject(token, config, darkMode = true) {
   const body = `<script>window.WikiJsTweaks=${JSON.stringify(config)}</script><script>${bundle}</script>`
-  const r = await gql('mutation($b:String){theming{setConfig(theme:"default",iconset:"mdi",darkMode:true,injectCSS:"",injectHead:"",injectBody:$b){responseResult{succeeded message}}}}', { b: body }, token)
+  const r = await gql('mutation($b:String,$d:Boolean!){theming{setConfig(theme:"default",iconset:"mdi",darkMode:$d,injectCSS:"",injectHead:"",injectBody:$b){responseResult{succeeded message}}}}', { b: body, d: darkMode }, token)
   if (!r?.data?.theming?.setConfig?.responseResult?.succeeded) throw new Error(`could not inject the bundle: ${JSON.stringify(r).slice(0, 200)}`)
 }
 
@@ -114,7 +114,20 @@ await page.goto(`${BASE}/en/procedures/vlan`)
 await page.waitForTimeout(3500)
 expect('a folder with few subfolders has no strip', !(await strip()))
 
-// 5 ── disabled
+// 5 ── light theme: the letters have the colour of the folder names, whatever the theme
+await inject(token, { folderIndex: { enabled: true } }, false)
+await page.goto(`${BASE}/en/customers/home`)
+await page.waitForSelector('#wjs-folder-index', { timeout: 20000 }).catch(() => {})
+const colors = await page.evaluate(() => {
+  const name = document.querySelector('.v-navigation-drawer .v-subheader ~ .v-list-item .v-list-item__title')
+  const letter = [...document.querySelectorAll('#wjs-folder-index button')].find((b) => !b.disabled)
+  return { name: getComputedStyle(name).color, letter: getComputedStyle(letter).color }
+})
+expect('light theme: the letters have the colour of the folder names', colors.name === colors.letter, JSON.stringify(colors))
+await page.waitForTimeout(500)
+await shot('folder-index-3-light', { x: 0, y: 0, width: 520, height: 900 })
+
+// 6 ── disabled
 await inject(token, { folderIndex: { enabled: false } })
 await page.goto(`${BASE}/en/customers/home`)
 await page.waitForTimeout(4000)

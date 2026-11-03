@@ -7,6 +7,13 @@ versions follow [Semantic Versioning](https://semver.org/) (pre-1.0: minor versi
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-11-03
+
+Drop-in upgrade from 0.1.0: replace the pasted script, keep your settings.
+
+### Fixed
+- **Folder index:** the letters had dark text on a blue sidebar in Wiki.js's light theme. The strip now takes its colours from the folder names themselves, so white names give white letters and dark names on a light sidebar give dark letters, in every theme. It no longer looks at the page's theme class.
+
 ## [0.1.0] — 2026-11-03
 
 First release.

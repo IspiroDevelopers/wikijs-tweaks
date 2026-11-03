@@ -24,20 +24,38 @@ const TEXT: Record<string, { label: string; go: string; digits: string }> = {
 }
 
 function css(side: 'right' | 'left'): string {
+  // The colours are variables on the sidebar (set from the folder names' own colour, see `colorsFrom`),
+  // so the strip matches any theme: white names on a blue sidebar, dark names on a light one.
   return (
     `#${ID}{position:absolute;${side}:3px;bottom:10px;width:20px;z-index:6;display:flex;flex-direction:column;justify-content:space-between;` +
-    `padding:2px 0;border-radius:10px;background:rgba(0,0,0,.28);font:600 clamp(8px,1.55vh,11px)/1 Roboto,sans-serif}` +
+    `padding:2px 0;border-radius:10px;background:var(--wjs-band,rgba(0,0,0,.28));font:600 clamp(8px,1.55vh,11px)/1 Roboto,sans-serif}` +
     `#${ID} button{all:unset;box-sizing:border-box;flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;` +
-    `cursor:pointer;color:rgba(255,255,255,.92);border-radius:8px;margin:0 1px}` +
-    `#${ID} button:hover,#${ID} button:focus-visible{background:rgba(255,255,255,.28)}` +
-    `#${ID} button:focus-visible{outline:2px solid #fff;outline-offset:-2px}` +
+    `cursor:pointer;color:var(--wjs-fg,#fff);border-radius:8px;margin:0 1px}` +
+    `#${ID} button:hover,#${ID} button:focus-visible{background:var(--wjs-hover,rgba(255,255,255,.28))}` +
+    `#${ID} button:focus-visible{outline:2px solid var(--wjs-fg,#fff);outline-offset:-2px}` +
     `#${ID} button[disabled]{cursor:default;opacity:.28;pointer-events:none}` +
-    `.theme--light #${ID}{background:rgba(0,0,0,.08)}` +
-    `.theme--light #${ID} button{color:rgba(0,0,0,.75)}.theme--light #${ID} button:hover{background:rgba(0,0,0,.14)}` +
     `.${ON} .v-list{padding-${side}:26px!important}` +
     `.${HIT}{animation:${HIT} 1.3s ease-out}` +
-    `@keyframes ${HIT}{0%,40%{box-shadow:inset 0 0 0 2px rgba(255,255,255,.9);background:rgba(255,255,255,.18)}100%{box-shadow:none}}`
+    `@keyframes ${HIT}{0%,40%{box-shadow:inset 0 0 0 2px var(--wjs-ring,rgba(255,255,255,.9));background:var(--wjs-hover,rgba(255,255,255,.18))}100%{box-shadow:none}}`
   )
+}
+
+/** Brightness (0 to 1) of a CSS colour such as `rgb(255, 255, 255)`; null when it cannot be read. */
+export function brightness(color: string): number | null {
+  const m = color.match(/rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/)
+  if (!m) return null
+  return (0.299 * Number(m[1]) + 0.587 * Number(m[2]) + 0.114 * Number(m[3])) / 255
+}
+
+/** The strip's colours, taken from the text colour of the folder names so that it follows the sidebar's own theme. */
+export function colorsFrom(textColor: string): Record<string, string> {
+  const light = (brightness(textColor) ?? 1) > 0.5 // light text: the sidebar is dark or coloured
+  return {
+    '--wjs-fg': textColor || '#fff',
+    '--wjs-band': light ? 'rgba(0,0,0,.28)' : 'rgba(0,0,0,.08)',
+    '--wjs-hover': light ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.14)',
+    '--wjs-ring': light ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.55)',
+  }
 }
 
 interface FolderItem {
@@ -88,7 +106,11 @@ export const folderIndex: Feature<FolderIndexOptions> = {
 
     const remove = () => {
       env.doc.getElementById(ID)?.remove()
-      env.doc.querySelector(`.${ON}`)?.classList.remove(ON)
+      const on = env.doc.querySelector<HTMLElement>(`.${ON}`)
+      if (on) {
+        on.classList.remove(ON)
+        for (const name of Object.keys(colorsFrom(''))) on.style.removeProperty(name)
+      }
     }
 
     const update = () => {
@@ -136,6 +158,8 @@ export const folderIndex: Feature<FolderIndexOptions> = {
         }
         strip.appendChild(button)
       }
+      const textColor = env.win.getComputedStyle(items[0]!.el.querySelector('.v-list-item__title') ?? items[0]!.el).color
+      for (const [name, value] of Object.entries(colorsFrom(textColor))) drawer.style.setProperty(name, value)
       drawer.appendChild(strip)
       drawer.classList.add(ON)
     }

@@ -1,6 +1,6 @@
 {
   "name": "wikijs-tweaks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Small, optional interface tweaks for Wiki.js 2.x, delivered as one script you paste into the theme's code injection. Every tweak is off until you turn it on.",
   "license": "AGPL-3.0-only",
