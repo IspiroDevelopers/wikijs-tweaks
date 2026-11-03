@@ -1,0 +1,37 @@
+{
+  "name": "wikijs-tweaks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Small, optional interface tweaks for Wiki.js 2.x, delivered as one script you paste into the theme's code injection. Every tweak is off until you turn it on.",
+  "license": "AGPL-3.0-only",
+  "author": "Wiki.js Tweaks contributors",
+  "homepage": "https://github.com/IspiroDevelopers/wikijs-tweaks#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IspiroDevelopers/wikijs-tweaks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IspiroDevelopers/wikijs-tweaks/issues"
+  },
+  "keywords": ["wikijs", "wiki.js", "userscript", "sidebar", "ui"],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:compat": "sh scripts/compat-wikijs.sh",
+    "check": "npm run typecheck && npm run test && npm run build && npm run check:repo",
+    "check:repo": "sh scripts/check-repo.sh"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "esbuild": "0.28.2",
+    "jsdom": "30.1.3",
+    "playwright": "1.63.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

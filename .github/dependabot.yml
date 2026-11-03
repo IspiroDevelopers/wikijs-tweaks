@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 10
+    ignore:
+      # Tied to the browser build inside the Playwright image used by scripts/compat-wikijs.sh;
+      # change both together (the version in package.json decides the image tag).
+      - dependency-name: playwright
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    groups:
+      github-actions:
+        patterns: ["*"]

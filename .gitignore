@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Secrets and local configuration: never commit these
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.sql
+*.dump
+
+# Local-only publishing guard (see scripts/check-repo.sh); lists private strings
+.privacy-denylist
+
+# Test output, logs, OS and editor files
+test-output/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+.claude/
